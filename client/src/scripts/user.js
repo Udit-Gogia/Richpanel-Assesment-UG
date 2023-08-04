@@ -4,7 +4,7 @@ export function biteCookie(key, value) {
     Cookies.set(key, `${value}`, { expires: 7 });
 }
 
-export async function loginUser(userData, setErrMessage) {
+export async function loginUser(userData) {
     const response = await fetch(`/user/login`, {
         method: "POST",
         headers: {
@@ -20,14 +20,42 @@ export async function loginUser(userData, setErrMessage) {
     token !== undefined && biteCookie("token", token);
 
     if (response.status === 404) {
-        setErrMessage("Email Address not found");
+        // setErrMessage("Email Address not found");
+        console.log("Email Address not found")
     } else if (response.status === 400) {
-        setErrMessage("Unable to login, Please check credentials");
+        console.log("Unable to login, Please check credentials");
     } else {
-        setErrMessage("");
+        console.log("");
     }
-
-
 
     return result;
 }
+
+
+export const signinUser = async (userData) => {
+    const response = await fetch(`/users`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+    });
+
+    const result = await response.json();
+
+    if (response.status === 409) {
+        console.log("Another user with same email address already exists");
+    } else if (response.status === 400) {
+        const code = response.headers.get("code");
+        console.log(response, code);
+        if (code === "pwdRep") {
+            console.log('Password cannot contain the word "password"');
+        }
+    } else {
+        const { token } = await result;
+        biteCookie("token", token);
+
+    }
+
+    return result;
+};

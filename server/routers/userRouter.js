@@ -5,7 +5,7 @@ const router = new express.Router()
 
 
 router.post("/user/login", async (req, res) => {
-
+    console.log("called /user/login", req.body)
     try {
         const user = await User.findByCredentials(
             req.body.email,
@@ -13,7 +13,7 @@ router.post("/user/login", async (req, res) => {
         );
         const token = await user.generateAuthToken();
 
-        res.status(201).send({ user, token });
+        res.status(201).send({ user, token, code: "login-success" });
     } catch (err) {
         if (err.message === "Passwords do not match") {
             return res.status(400).send({
@@ -41,7 +41,7 @@ router.post("/users", async (req, res) => {
         await user.save();
 
         console.log("3. saved user")
-        res.status(201).send({ user, token });
+        res.status(201).send({ user, token, code: "signup-success" });
     } catch (err) {
         console.log(err)
         // 409 status code represents conflit
