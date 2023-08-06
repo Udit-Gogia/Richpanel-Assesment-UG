@@ -16,11 +16,11 @@ export async function loginUser(userData) {
     const result = await response.json();
 
     const { token } = await result;
-    // token !== undefined && saveToLS("token", token);
+
     token !== undefined && biteCookie("token", token);
 
     if (response.status === 404) {
-        // setErrMessage("Email Address not found");
+
         console.log("Email Address not found")
     } else if (response.status === 400) {
         console.log("Unable to login, Please check credentials");
